@@ -1,0 +1,6 @@
+[submodule ".settings"]
+	path = .settings
+	url = https://github.com/emmanuelbenitez/ResharperSettings.git
+[submodule ".resources"]
+	path = .resources
+	url = https://github.com/emmanuelbenitez/BigSolution.Build.Resources.git

@@ -1,0 +1,27 @@
+trigger: none
+pr: none
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily midnight build
+  branches:
+    include:
+    - master
+
+variables:
+  - template: version-variables.yml
+
+resources:
+  repositories:
+    - repository: pipelineTemplateRepository
+      type: github
+      name: emmanuelbenitez/BigSolution.Build.Agent.Yaml.Pipeline.Templates
+      endpoint: github.com_emmanuelbenitez
+
+extends:
+  template: Pipelines/dotnet-nuget/release.yml@pipelineTemplateRepository
+  parameters:
+    ProjectOrSolutionPath: "$(Build.SourcesDirectory)/BigSolution.Application.sln"
+    Major: ${{ variables.versionMajor }}
+    Minor: ${{ variables.versionMinor }}
+    Patch: ${{ variables.versionPatch }}
+    PreRelease: "preview"

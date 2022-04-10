@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>BigSolution.Infra.Application.Autofac</AssemblyName>
+    <RootNamespace>BigSolution.Application</RootNamespace>
+    <Description>Provides Autofac extensions for command and query</Description>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/emmanuelbenitez/BigSolution.Application</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DeterministicSourcePaths Condition="'$(EnableSourceLink)' == ''">false</DeterministicSourcePaths>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild Condition=" '$(GeneratePackageOnBuild)' == '' ">false</GeneratePackageOnBuild>
+    <PackageId>$(AssemblyName)</PackageId>
+    <PackageDescription>$(Description)</PackageDescription>
+    <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+    <PackageTags>command query</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.3.0" />
+    <PackageReference Include="BigSolution.Infra.Common" Version="1.0.1-preview.210202.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Application\Application.csproj" />
+  </ItemGroup>
+
+</Project>
