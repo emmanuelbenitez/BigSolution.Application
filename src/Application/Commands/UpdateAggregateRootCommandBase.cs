@@ -4,38 +4,42 @@ using BigSolution.Infra.Mapping;
 
 namespace BigSolution.Application.Commands;
 
-public abstract class UpdateAggregateRootCommandBase<TAggregate, TParameter> :
-    RepositoryCommandBase<TAggregate>,
-    ICommand<TParameter>, ICommandAsync<TParameter>
+public abstract class UpdateAggregateRootCommandBase<TAggregate, TModel> : RepositoryCommandBase<TAggregate>,
+    ICommand<TModel, TModel>, ICommandAsync<TModel, TModel>
     where TAggregate : class, IAggregateRoot
 {
-    private readonly IMapper<TParameter, TAggregate> _mapper;
+    private readonly IMapper<TModel, TAggregate> _entityMapper;
+    private readonly IMapper<TAggregate, TModel> _modelMapper;
 
-    protected UpdateAggregateRootCommandBase(IRepository<TAggregate> repository, IUnitOfWork unitOfWork,
-        IMapper<TParameter, TAggregate> mapper) : base(
-        repository,
-        unitOfWork)
+    protected UpdateAggregateRootCommandBase(
+        IRepository<TAggregate> repository,
+        IUnitOfWork unitOfWork,
+        IMapper<TModel, TAggregate> entityMapper,
+        IMapper<TAggregate, TModel> modelMapper)
+        : base(repository, unitOfWork)
     {
-        Requires.Argument(mapper, nameof(mapper))
+        Requires.Argument(entityMapper, nameof(entityMapper))
             .IsNotNull()
             .Check();
 
-        _mapper = mapper;
+        _entityMapper = entityMapper;
+        _modelMapper = modelMapper;
     }
 
     #region ICommand<TParameter> Members
 
-    public void Execute(TParameter parameter)
+    public TModel Execute(TModel parameter)
     {
         var task = ExecuteAsync(parameter);
         task.Wait();
+        return task.Result;
     }
 
     #endregion
 
     #region ICommandAsync<TParameter> Members
 
-    public async Task ExecuteAsync(TParameter parameter)
+    public async Task<TModel> ExecuteAsync(TModel parameter)
     {
         Requires.Argument(parameter, nameof(parameter))
             .IsNotNull()
@@ -52,6 +56,7 @@ public abstract class UpdateAggregateRootCommandBase<TAggregate, TParameter> :
 
             await UnitOfWork.SaveAsync();
             await transaction.CommitAsync();
+            return _modelMapper.Map(aggregate!);
         }
         catch (Exception)
         {
@@ -63,10 +68,10 @@ public abstract class UpdateAggregateRootCommandBase<TAggregate, TParameter> :
     #endregion
 
     [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global", Justification = "Public API.")]
-    protected virtual void Update(TAggregate aggregate, TParameter parameter)
+    protected virtual void Update(TAggregate aggregate, TModel parameter)
     {
-        _mapper.Map(parameter, aggregate);
+        _entityMapper.Map(parameter, aggregate);
     }
 
-    protected abstract Task<TAggregate?> FindAggregateAsync(TParameter parameter);
+    protected abstract Task<TAggregate?> FindAggregateAsync(TModel parameter);
 }
